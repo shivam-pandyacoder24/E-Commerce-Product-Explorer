@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>E-Commerce Product Explorer</title>
+  <meta name="description" content="A small online shop where every feature runs on a hand-written data structure: arrays, searching, sorting, linked list, stack, queue, trees, graph and hashing.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23101B3B'/%3E%3Cpath d='M6 16l7-7h13v14H13z' fill='%23FFD43A'/%3E%3Ccircle cx='13.5' cy='16' r='2' fill='%23101B3B'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to products</a>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-name">Product Explorer</span>
+      </a>
+
+      <form class="search" id="search-form" role="search">
+        <label class="visually-hidden" for="search-input">Search products by name or product ID</label>
+        <input id="search-input" type="search" autocomplete="off" placeholder="Search by name, or type a product ID like 4821">
+        <button type="submit">Search</button>
+      </form>
+
+      <button class="cart-link" type="button" data-action="go-to-cart">
+        Cart <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Sections">
+    <div class="tabs-inner">
+      <button type="button" class="tab" data-action="view" data-view="shop" aria-current="page">Shop</button>
+      <button type="button" class="tab" data-action="view" data-view="orders">Orders <span class="tab-count" id="orders-count" hidden></span></button>
+      <button type="button" class="tab" data-action="view" data-view="how">How it works</button>
+      <label class="structures-switch">
+        <input type="checkbox" id="structures-toggle" checked>
+        Show data structures
+      </label>
+    </div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <!-- ===================== SHOP ===================== -->
+    <section class="view shop" id="view-shop" aria-label="Shop">
+
+      <aside class="panel categories" aria-labelledby="categories-title">
+        <details id="categories-details" open>
+          <summary>
+            <h2 id="categories-title">Categories</h2>
+            <span class="ds-chip ds">Tree</span>
+          </summary>
+          <ul class="tree" id="category-tree"></ul>
+        </details>
+      </aside>
+
+      <div class="catalogue">
+        <p class="intro ds">
+          Every feature of this shop runs on a data structure written by hand.
+          The bar at the bottom shows what each click did.
+        </p>
+
+        <div class="toolbar">
+          <div class="field">
+            <label for="sort-select">Sort by</label>
+            <select id="sort-select"></select>
+          </div>
+          <div class="field ds">
+            <label for="algorithm-select">Sorting method</label>
+            <select id="algorithm-select"></select>
+          </div>
+          <div class="field">
+            <label for="price-select">Price</label>
+            <select id="price-select"></select>
+          </div>
+        </div>
+
+        <div class="results-heading" id="results-heading" aria-live="polite"></div>
+        <ul class="grid" id="product-grid"></ul>
+        <div class="empty" id="results-empty" hidden></div>
+      </div>
+
+      <aside class="panel cart" id="cart" aria-labelledby="cart-title" tabindex="-1">
+        <div class="panel-title">
+          <h2 id="cart-title">Cart</h2>
+          <span class="ds-chip ds">Linked list</span>
+        </div>
+
+        <div class="chain ds" id="cart-chain"></div>
+
+        <p class="empty-note" id="cart-empty">Your cart is empty. Add a product to start an order.</p>
+        <ul class="cart-items" id="cart-items"></ul>
+
+        <div class="cart-total" id="cart-total" hidden>
+          <span>Total</span>
+          <strong id="cart-total-amount"></strong>
+        </div>
+
+        <button class="button primary wide" type="button" id="place-order" data-action="place-order" data-key="place-order" disabled>Place order</button>
+
+        <div class="order-confirmation" id="order-confirmation" role="status" hidden></div>
+
+        <div class="undo">
+          <div class="panel-title">
+            <h3>Undo</h3>
+            <span class="ds-chip ds">Stack</span>
+          </div>
+          <button class="button wide" type="button" id="undo-button" data-action="undo" data-key="undo" disabled>Undo last change</button>
+          <p class="undo-next" id="undo-next">Nothing to undo yet.</p>
+          <ol class="pile ds" id="undo-pile" aria-label="Undo stack, newest change first"></ol>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===================== ORDERS ===================== -->
+    <section class="view orders" id="view-orders" aria-label="Orders" hidden>
+      <div class="orders-main">
+        <div class="panel">
+          <div class="panel-title">
+            <h2>Waiting to be dispatched</h2>
+            <span class="ds-chip ds">Queue</span>
+          </div>
+          <p class="panel-text">Orders are dispatched in the order they were placed: first in, first out.</p>
+          <div class="lane" id="queue-lane"></div>
+          <p class="empty-note" id="queue-empty">No orders are waiting. Place an order from the cart and it joins the queue here.</p>
+          <button class="button primary" type="button" id="dispatch-button" data-action="dispatch" data-key="dispatch" disabled>Dispatch next order</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">
+            <h2>Dispatched orders</h2>
+            <span class="ds-chip ds">Array</span>
+          </div>
+          <p class="empty-note" id="dispatched-empty">Nothing has been dispatched yet.</p>
+          <ul class="order-list" id="dispatched-list"></ul>
+        </div>
+      </div>
+
+      <div class="panel track">
+        <div class="panel-title">
+          <h2>Track an order</h2>
+          <span class="ds-chip ds">Hash table</span>
+        </div>
+        <form class="track-form" id="track-form">
+          <label for="track-input">Order ID</label>
+          <div class="track-row">
+            <input id="track-input" type="text" autocomplete="off" placeholder="ORD-1001">
+            <button class="button" type="submit">Track order</button>
+          </div>
+        </form>
+        <div class="track-result" id="track-result" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ===================== HOW IT WORKS ===================== -->
+    <section class="view how" id="view-how" aria-label="How it works" hidden>
+      <div class="how-intro">
+        <h2>How it works</h2>
+        <p>
+          Nothing here uses a ready-made library. Each row below is a data structure
+          or algorithm written from scratch in plain JavaScript, with the shop feature
+          it powers and its current state. The numbers change as you use the shop.
+        </p>
+      </div>
+
+      <div class="panel table-panel">
+        <table class="how-table">
+          <thead>
+            <tr>
+              <th scope="col">Data structure</th>
+              <th scope="col">What it does in the shop</th>
+              <th scope="col">Right now</th>
+              <th scope="col">Code</th>
+            </tr>
+          </thead>
+          <tbody id="how-rows"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <h3>Product IDs in the binary search tree</h3>
+        </div>
+        <p class="panel-text" id="bst-caption"></p>
+        <div class="figure-scroll" id="bst-figure" tabindex="0" role="group" aria-label="Binary search tree diagram. Scrolls sideways on small screens."></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <h3>Products in the hash table</h3>
+        </div>
+        <p class="panel-text" id="hash-caption"></p>
+        <div class="buckets" id="hash-figure"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== PRODUCT DETAILS ===================== -->
+  <dialog class="product-dialog" id="product-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" type="button" data-action="close-dialog">Close</button>
+    <div class="dialog-body" id="dialog-body"></div>
+  </dialog>
+
+  <!-- ===================== ACTIVITY BAR ===================== -->
+  <aside class="trace ds" id="trace" aria-label="What the data structures just did">
+    <div class="trace-history" id="trace-history" hidden></div>
+    <div class="trace-bar">
+      <button class="trace-toggle" type="button" id="trace-toggle" data-action="trace-toggle" aria-expanded="false" aria-controls="trace-history">Show history</button>
+      <p class="trace-title" id="trace-title"></p>
+      <ol class="trace-steps" id="trace-steps"></ol>
+    </div>
+  </aside>
+
+  <div class="visually-hidden" id="announcer" role="status" aria-live="polite"></div>
+
+  <footer class="site-footer">
+    <p>
+      E-Commerce Product Explorer, a data structures and algorithms project.
+      All products and brands are made up.
+      <a href="https://github.com/shivam-pandyacoder24/E-Commerce-Product-Explorer">Source code on GitHub</a>
+    </p>
+  </footer>
+
+  <script src="js/dsa/hash-table.js"></script>
+  <script src="js/dsa/linked-list.js"></script>
+  <script src="js/dsa/stack.js"></script>
+  <script src="js/dsa/queue.js"></script>
+  <script src="js/dsa/category-tree.js"></script>
+  <script src="js/dsa/bst.js"></script>
+  <script src="js/dsa/graph.js"></script>
+  <script src="js/dsa/search.js"></script>
+  <script src="js/dsa/sort.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
